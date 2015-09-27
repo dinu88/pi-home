@@ -12,7 +12,7 @@ client.on('data', function(action) {
 
   if (action.name == 'lamp') {
     var command = 'pilight-send -p elro_800_switch -u 7 -s 21';
-    if (action.action = 'on') {
+    if (action.action == 'on') {
       command = command + ' -t';
     } else {
       command = command + ' -f';

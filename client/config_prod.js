@@ -2,6 +2,6 @@ var config = {};
 
 config.netServer = {
   port: 8014,
-  host: 'http://chiriacdinu.com'
+  host: 'hiriacdinu.com'
 };
 module.exports = config;
