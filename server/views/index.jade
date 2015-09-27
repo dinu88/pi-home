@@ -1,6 +1,22 @@
 doctype html
-html(lang='en')
-   head
-      title pi-home
-   body
-      h1 pi-home
+html(ng-app='piHome')
+   head(lang='en')
+      meta(charset='UTF-8')
+      title
+      link(rel='stylesheet', href='https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css')
+      link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic')
+      meta(name='viewport', content='initial-scale=1')
+   body(layout='column', ng-controller='piHome')
+      div(style='padding-bottom: 15px;')
+         md-toolbar
+            .md-toolbar-tools
+               h2.md-flex Smart Room
+      md-list-item(ng-repeat='(id, setting) in settings')
+         md-icon.icons_conf(md-svg-icon='{{setting.icon}}')
+         p  {{ setting.actionName }}
+         md-switch.md-secondary(ng-model='setting.enabled', ng-change="setting.action(setting)")
+      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js')
+      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js')
+      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js')
+      script(src='https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js')
+      script(src='static/js/app.js')
