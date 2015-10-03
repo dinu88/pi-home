@@ -16,6 +16,7 @@ module.exports = function (app, passport, account, config, logger, net) {
     console.log('client connected');
 
     netConnections.push(netConnection);
+    netConnection.id = netConnections.indexOf(netConnection);
 
     netConnection.on('data', function(data) {
       "use strict";
@@ -28,7 +29,7 @@ module.exports = function (app, passport, account, config, logger, net) {
 
     netConnection.on('end', function() {
       console.log('client disconnected');
-      //TODO: splice netConnections of dropped connection;
+      netConnections.splice(netConnection.id, 1);
     });
     //netConnection.write('hello\r\n');
     //netConnection.pipe(netConnection);
