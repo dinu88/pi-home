@@ -65,12 +65,20 @@ var netServer = net.createServer(function(netConnection) { //'connection' listen
   //require routes
   require('./routes')(app, passport, account, config, logger, netConnection);
 
+  netConnection.on('data', function(data) {
+    "use strict";
+    data = JSON.parse(data.toString());
+    if (data.name = 'ping') {
+      console.log(data.id, 'ping');
+      netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
+    }
+  });
 
   netConnection.on('end', function() {
     console.log('client disconnected');
   });
   //netConnection.write('hello\r\n');
-  netConnection.pipe(netConnection);
+  //netConnection.pipe(netConnection);
 });
 
 app.listen(app.get('port'), function(){
