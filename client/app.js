@@ -47,7 +47,7 @@ var createClient = function() {
     var pingTimeout = [];
 
     var clearTimeouts = function() {
-      for (var j = 0; j < pingTimeout-1; i++) {
+      for (var j = 0; j < pingTimeout.length; j++) {
         clearTimeout(pingTimeout[j]);
       }
     };
@@ -56,16 +56,16 @@ var createClient = function() {
       return setTimeout(function() {
         if (pongs.indexOf(ping.id) !== -1) {
           pongs.splice(pongs.indexOf(ping.id), 1);
-          clearTimeouts();
           pingServer();
-        } else if (i == timeouts.length - 1) {
           clearTimeouts();
+        } else if (i === timeouts.length - 1) {
           createClient();
+          clearTimeouts();
         }
       }, time);
     };
 
-    for (var i = 0; i < timeouts.length-1; i++) {
+    for (var i = 0; i < timeouts.length; i++) {
       pingTimeout[i] = createTimeout(i, timeouts[i]);
     }
 

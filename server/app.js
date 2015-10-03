@@ -58,35 +58,8 @@ passport.serializeUser(account.serializeUser);
 passport.deserializeUser(account.deserializeUser);
 
 
-//TODO: Works only with one connection;
-var netServer = net.createServer(function(netConnection) { //'connection' listener
-  console.log('client connected');
-
-  //require routes
-  require('./routes')(app, passport, account, config, logger, netConnection);
-
-  netConnection.on('data', function(data) {
-    "use strict";
-    data = JSON.parse(data.toString());
-    if (data.name = 'ping') {
-      console.log(data.id, 'ping');
-      netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
-    }
-  });
-
-  netConnection.on('end', function() {
-    console.log('client disconnected');
-  });
-  //netConnection.write('hello\r\n');
-  //netConnection.pipe(netConnection);
-});
+require('./routes')(app, passport, account, config, logger, net);
 
 app.listen(app.get('port'), function(){
   console.log(("Express server listening on port " + app.get('port')));
-});
-
-
-netServer.listen(config.app.NET_PORT, function() { //'listening' listener
-  console.log(("NET server listening on port " + config.app.NET_PORT));
-  console.log("Waiting client to connect...")
 });

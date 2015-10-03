@@ -1,8 +1,38 @@
 var https = require('https'),
     http = require('http');
 
-module.exports = function (app, passport, account, config, logger, netConnection) {
+module.exports = function (app, passport, account, config, logger, net) {
   "use strict";
+
+  var netConnections = [];
+
+  var broadcast = function(message) {
+    for (var i = 0; i < netConnections.length; i++) {
+      netConnection[i].write(JSON.stringify(message));
+    }
+  };
+
+  var netServer = net.createServer(function(netConnection) { //'connection' listener
+    console.log('client connected');
+
+    netConnections.push(netConnection);
+
+    netConnection.on('data', function(data) {
+      "use strict";
+      data = JSON.parse(data.toString());
+      if (data.name = 'ping') {
+        console.log(data.id, 'ping');
+        netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
+      }
+    });
+
+    netConnection.on('end', function() {
+      console.log('client disconnected');
+      //TODO: splice netConnections of dropped connection;
+    });
+    //netConnection.write('hello\r\n');
+    //netConnection.pipe(netConnection);
+  });
 
   app.get('/', function(req, res) {
     "use strict";
@@ -44,14 +74,18 @@ module.exports = function (app, passport, account, config, logger, netConnection
     } else {
       action.action = 'off';
     }
-    action = JSON.stringify(action);
-    netConnection.write(action);
+    broadcast(action);
     res.sendStatus(200);
   });
 
   app.get('*', function(req, res) {
     "use strict";
     res.render('index');
+  });
+
+  netServer.listen(config.app.NET_PORT, function() { //'listening' listener
+    console.log(("NET server listening on port " + config.app.NET_PORT));
+    console.log("Waiting client to connect...")
   });
 
 };
