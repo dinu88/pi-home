@@ -8,7 +8,7 @@ module.exports = function (app, passport, account, config, logger, net) {
 
   var broadcast = function(message) {
     for (var i = 0; i < netConnections.length; i++) {
-      netConnection[i].write(JSON.stringify(message));
+      netConnections[i].write(JSON.stringify(message));
     }
   };
 
