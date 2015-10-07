@@ -8,7 +8,13 @@ module.exports = function (app, passport, account, config, logger, net) {
 
   var broadcast = function(message) {
     for (var i = 0; i < netConnections.length; i++) {
-      netConnections[i].write(JSON.stringify(message));
+      if (netConnections[i].writable) {
+        netConnections[i].write(JSON.stringify(message));
+      } else {
+        console.log('client is not writable');
+        netConnections[i].end();
+        netConnections.splice(i, 1);
+      }
     }
   };
 
@@ -30,6 +36,9 @@ module.exports = function (app, passport, account, config, logger, net) {
     netConnection.on('end', function() {
       console.log('client disconnected');
       netConnections.splice(netConnection.id, 1);
+    });
+    netConnection.on('error',function(){
+      console.log("%j", arguments);
     });
     //netConnection.write('hello\r\n');
     //netConnection.pipe(netConnection);
