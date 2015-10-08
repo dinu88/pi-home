@@ -35,7 +35,9 @@ module.exports = function (app, passport, account, config, logger, net) {
       }
     });
 
-    setInterval(netConnection.write(JSON.stringify({name: 'temp'})), 1000);
+    setInterval(function() {
+      netConnection.write(JSON.stringify({name: 'temp'}));
+    }, 1000);
 
     netConnection.on('end', function() {
       console.log('client disconnected');
