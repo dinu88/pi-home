@@ -31,3 +31,5 @@ node_modules
 
 .idea
 
+phonegap-client/*
+!phonegap-client/www
