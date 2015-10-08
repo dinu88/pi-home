@@ -30,8 +30,12 @@ module.exports = function (app, passport, account, config, logger, net) {
       if (data.name = 'ping') {
         console.log(data.id, 'ping');
         netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
+      } else if (data.name == 'temp') {
+        console.log(data);
       }
     });
+
+    setInterval(netConnection.write(JSON.stringify({name: 'temp'})), 1000);
 
     netConnection.on('end', function() {
       console.log('client disconnected');

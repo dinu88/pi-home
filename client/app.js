@@ -29,6 +29,17 @@ var createClient = function() {
               console.log('exec error: ' + error);
             }
           })
+    } else if(action.name == 'temp') {
+      var command = 'sudo /home/pi/sources/Adafruit_Python_DHT/examples/AdafruitDHT.py 22 4';
+      exec(command,
+          function (error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            client.write(JSON.stringify({name: 'temp', data: stdout}));
+            if (error !== null) {
+              console.log('exec error: ' + error);
+            }
+          })
     } else if (action.name == 'pong') {
       console.log(action.id, 'pong');
       pongs.push(action.id);
