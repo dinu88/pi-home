@@ -25,12 +25,16 @@ html(ng-app='piHome')
          p Heater
          md-switch.md-secondary(ng-model='settings[1].enabled', ng-change="settings[1].action(settings[1])")
       md-list-item(layout-align="start start")
-         div( style="max-width:28px; padding: 20px 0;")
+         div( style="max-width:28px; padding: 25px 0;")
             md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_exposure_black_24px.svg')
-         div()
+         div(style="padding-left: 25px;" flex)
             md-input-container
                label Climate Control
                input
+         div(flex style="max-width:60px; padding: 20px 0;")
+            md-button.md-icon-button.launch
+               md-icon(md-svg-icon="static/images/icons/ic_done_black_24px.svg")
+
       script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js')
       script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js')
       script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js')
