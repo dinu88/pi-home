@@ -35,9 +35,13 @@ var createClient = function() {
           function (error, stdout, stderr) {
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
-            client.write(JSON.stringify({name: 'temp', data: stdout}));
+
             if (error !== null) {
               console.log('exec error: ' + error);
+            } else {
+              data = JSON.stringify({name: 'temp', data: stdout});
+              console.log(data);
+              client.write(data);
             }
           })
     } else if (action.name == 'pong') {

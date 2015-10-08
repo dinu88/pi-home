@@ -28,7 +28,7 @@ module.exports = function (app, passport, account, config, logger, net) {
       "use strict";
       data = JSON.parse(data.toString());
       if (data.name = 'ping') {
-        console.log(data.id, 'ping');
+        console.log(data, 'ping');
         netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
       } else if (data.name == 'temp') {
         console.log(data);
