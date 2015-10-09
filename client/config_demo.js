@@ -2,12 +2,12 @@ var config = {};
 
 config.netServer = {
   port: 8014,
-  host: '127.0.0.1'
+  host: 'hostname.com'
 };
 
 config.ngrok = {
   enabled: true,
-  authtoken: '25k97zzD7kLuti3rGyR3y_5eT8hhkZuUTN6Di2HxRSN'
+  authtoken: '1234567890abcdefghklmnopqrstuvwxyz'
 };
 
 module.exports = config;

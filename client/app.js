@@ -1,16 +1,41 @@
 var net = require('net'),
     config = require('./config_' + (process.env.ENV || 'dev') + '.js'),
     exec = require('child_process').exec,
+    ngrok = require('ngrok'),
     client;
 
+
+var sshTunnelling = function (fn) {
+  "use strict";
+  ngrok.connect({
+    proto: 'tcp', // http|tcp|tls
+    addr: 22, // port or network address
+    authtoken: config.ngrok.authtoken
+  }, function (err, url) {
+    if (err) {
+      setTimeput(function() {
+        sshTunnelling(fn);
+      }, 5000)
+    } else {
+      fn(url);
+    }
+  });
+};
 
 var createClient = function() {
   "use strict";
   client = net.connect(config.netServer,
       function() { //'connect' listener
         console.log('connected to server!');
+        if (config.ngrok.enabled) {
+          sshTunnelling(function (url) {
+            console.log(url);
+            client.write({name: 'sshTunnel', 'data': url})
+          });
+        }
         pingServer();
       });
+
   client.on('data', function(action) {
     action = JSON.parse(action.toString());
 
@@ -29,12 +54,17 @@ var createClient = function() {
               console.log('exec error: ' + error);
             }
           })
-    } else if(action.name == 'temp') {
-      var command = 'sudo /home/pi/sources/Adafruit_Python_DHT/examples/AdafruitDHT.py 22 4';
+    } else
+    if(action.name == 'temp') {
+      //TODO move Adfruit DHT to this project
+      //var command = 'sudo /home/pi/sources/Adafruit_Python_DHT/examples/AdafruitDHT.py 22 4';
+      var command = 'uname -a';
       exec(command,
           function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
+            if (error) {
+              console.log('stderr: ' + stderr);
+            }
+            console.error(stdout);
             if (error !== null) {
               console.log('exec error: ' + error);
             } else {
@@ -42,7 +72,8 @@ var createClient = function() {
               client.write(s);
             }
           })
-    } else if (action.name == 'pong') {
+    } else
+    if (action.name == 'pong') {
       console.log(action.id, 'pong');
       pongs.push(action.id);
     }

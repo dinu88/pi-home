@@ -27,11 +27,15 @@ module.exports = function (app, passport, account, config, logger, net) {
     netConnection.on('data', function(data) {
       "use strict";
       data = JSON.parse(data.toString());
-      if (data.name = 'ping') {
+      if (data.name == 'ping') {
         console.log(data, 'ping');
         netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
-      } else if (data.name == 'temp') {
+      } else
+      if (data.name == 'temp') {
         console.log(data);
+      } else
+      if (data.name == 'sshTunnel') {
+        console.log(data.data);
       }
     });
 

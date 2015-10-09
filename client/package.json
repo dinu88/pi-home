@@ -1,0 +1,14 @@
+{
+  "name": "pi-home-client",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Pi home internet of things",
+  "main": "app.js",
+  "dependencies": {
+    "ngrok": "^0.2.2"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "dinu88&cristina90"
+}
