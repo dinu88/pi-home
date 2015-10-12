@@ -1,6 +1,25 @@
 var https = require('https'),
     http = require('http');
 
+Object.defineProperty(global, '__stack', {
+  get: function(){
+    var orig = Error.prepareStackTrace;
+    Error.prepareStackTrace = function(_, stack){ return stack; };
+    var err = new Error;
+    Error.captureStackTrace(err, arguments.callee);
+    var stack = err.stack;
+    Error.prepareStackTrace = orig;
+    return stack;
+  }
+});
+
+Object.defineProperty(global, '__line', {
+  get: function(){
+    return __stack[1].getLineNumber();
+  }
+});
+
+
 module.exports = function (app, passport, account, config, logger, net) {
   "use strict";
 
@@ -11,44 +30,62 @@ module.exports = function (app, passport, account, config, logger, net) {
       if (netConnections[i].writable) {
         netConnections[i].write(JSON.stringify(message));
       } else {
-        console.log('client is not writable');
+        console.log('client is not writable, drop connection');
         netConnections[i].end();
-        netConnections.splice(i, 1);
+        spliceConnection(netConnections[i].id);
       }
     }
+  };
+
+  var spliceConnection = function(id) {
+    for (var i in netConnections) {
+      if (netConnections[i].id == id) {
+        netConnections.splice(i);
+      }
+    }
+    console.log(netConnections.length, __line);
   };
 
   var netServer = net.createServer(function(netConnection) { //'connection' listener
     console.log('client connected');
 
+    netConnection.id = Math.floor(Math.random() * (99999 - 10000) + 10000);
     netConnections.push(netConnection);
-    netConnection.id = netConnections.indexOf(netConnection);
 
     netConnection.on('data', function(data) {
       "use strict";
       data = JSON.parse(data.toString());
       if (data.name == 'ping') {
-        console.log(data, 'ping');
+        console.log(data, 'ping', __line);
         netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
       } else
       if (data.name == 'temp') {
-        console.log(data);
+        console.log(data, __line);
       } else
       if (data.name == 'sshTunnel') {
-        console.log(data.data);
+        console.log(data.data, __line);
       }
     });
 
-    setInterval(function() {
-      netConnection.write(JSON.stringify({name: 'temp'}));
+    var temp = setInterval(function() {
+      if (netConnection) {
+        netConnection.write(JSON.stringify({name: 'temp'}));
+      } else {
+        clearInterval(temp);
+      }
     }, 1000);
 
     netConnection.on('end', function() {
-      console.log('client disconnected');
-      netConnections.splice(netConnection.id, 1);
+      console.log('client disconnected', __line);
+      spliceConnection(netConnection.id);
     });
     netConnection.on('error',function(){
-      console.log("%j", arguments);
+      console.log("%j", arguments, __line);
+      netConnection.end();
+      netConnection.destroy();
+      netConnection.unref();
+      spliceConnection(netConnection.id);
+      netConnection = null;
     });
     //netConnection.write('hello\r\n');
     //netConnection.pipe(netConnection);
