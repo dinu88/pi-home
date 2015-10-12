@@ -46,6 +46,36 @@ module.exports = function (app, passport, account, config, logger, net) {
     console.log(netConnections.length, __line);
   };
 
+  var Thermostat = function() {
+    var currentTemp = 0;
+    var preferedTemp = 0;
+    Object.defineProperty(this, 'currentTemp', {
+      set: function(temp) {
+        currentTemp = temp;
+        toggleHeater();
+      },
+      get: function() {return currentTemp; }
+    });
+    Object.defineProperty(this, 'preferedTemp', {
+      set: function(temp) {
+        preferedTemp = temp;
+        toggleHeater();
+      },
+      get: function() {return preferedTemp; }
+    });
+
+    var toggleHeater = function() {
+      if (currentTemp < preferedTemp) {
+        broadcast({name: 'heater', action: 'on'});
+      } else {
+        broadcast({name: 'heater', action: 'off'});
+      }
+    }
+
+  };
+  var thermostat = new Thermostat();
+
+
   var netServer = net.createServer(function(netConnection) { //'connection' listener
     console.log('client connected');
 
@@ -121,6 +151,20 @@ module.exports = function (app, passport, account, config, logger, net) {
     res.redirect('/')
   });
 
+  app.get('/home/light/:action', function(req, res) {
+    var action = {
+      name: 'light'
+    };
+
+    if (req.params.action == 'on') {
+      action.action = 'on';
+    } else {
+      action.action = 'off';
+    }
+    broadcast(action);
+    res.sendStatus(200);
+  });
+
   app.get('/home/lamp/:action', function(req, res) {
     var action = {
       name: 'lamp'
@@ -132,6 +176,25 @@ module.exports = function (app, passport, account, config, logger, net) {
       action.action = 'off';
     }
     broadcast(action);
+    res.sendStatus(200);
+  });
+
+  app.get('/home/heater/:action', function(req, res) {
+    var action = {
+      name: 'heater'
+    };
+
+    if (req.params.action == 'on') {
+      action.action = 'on';
+    } else {
+      action.action = 'off';
+    }
+    broadcast(action);
+    res.sendStatus(200);
+  });
+
+  app.get('/home/thermostat/:preferredTemperature', function(req, res) {
+    thermostat.preferedTemp = req.params.preferredTemperature;
     res.sendStatus(200);
   });
 

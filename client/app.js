@@ -56,8 +56,24 @@ var createClient = function() {
       return console.error(e);
     }
     if (action) {
+      if (action.name == 'light') {
+        var command = 'pilight-send -p elro_800_switch -u 10 -s 22 -t';
+        if (action.action == 'on') {
+          command = command + ' -t';
+        } else {
+          command = command + ' -f';
+        }
+        exec(command,
+            function (error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
+              }
+            })
+      } else
       if (action.name == 'lamp') {
-        var command = 'pilight-send -p elro_800_switch -u 7 -s 21';
+        var command = 'pilight-send -p elro_800_switch -u 12 -s 22 -f';
         if (action.action == 'on') {
           command = command + ' -t';
         } else {

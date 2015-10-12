@@ -17,6 +17,21 @@ angular.module('piHome', ['ngMaterial'])
 
         var toggleLight = function(action) {
             console.log(action.enabled);
+            var href = 'http://chiriacdinu.com:8013/home/light/';
+            if (action.enabled) {
+                href = href + 'on';
+            } else {
+                href = href + 'off';
+            }
+            $http.get(href).then(function(response) {
+                console.log(response);
+            }, function(response) {
+                console.error(response);
+            });
+        };
+
+        var toggleLamp = function(action) {
+            console.log(action.enabled);
             var href = 'http://chiriacdinu.com:8013/home/lamp/';
             if (action.enabled) {
                 href = href + 'on';
@@ -34,9 +49,21 @@ angular.module('piHome', ['ngMaterial'])
             console.log(action.enabled);
         };
 
+        var setPreferredTemperature = function(temp) {
+            "use strict";
+            var href = 'http://localhost:8013/home/thermostat/' + temp;
+            $http.get(href).then(function(response) {
+                console.log(response);
+            }, function(response) {
+                console.error(response);
+            });
+        };
+
         $scope.settings = [
             { name: 'light', action: toggleLight, actionName: 'Light', icon: 'static/images/icons/wb_incandescent.svg', enabled: true },
+            { name: 'lamp', action: toggleLamp, actionName: 'Lamp', icon: 'static/images/icons/wb_incandescent.svg', enabled: true },
             { name: 'heater', action: toggleHeater, actionName: 'Heater', icon: 'static/images/icons/wb_sunny.svg', enabled: false },
+            { name: 'thermostat', action: setPreferredTemperature, actionName: 'Thermostat', icon: 'static/images/icons/wb_sunny.svg'},
         ];
 
     });
