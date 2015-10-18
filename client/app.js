@@ -43,6 +43,7 @@ var createClient = function() {
     client.end();
     if (err.code == 'ECONNREFUSED') {
       client = null;
+      pingServer = null;
       setTimeout(function() {
         createClient();
       }, 10000);
@@ -138,11 +139,15 @@ var createClient = function() {
         return setTimeout(function() {
           if (pongs.indexOf(ping.id) !== -1) {
             pongs.splice(pongs.indexOf(ping.id), 1);
-            pingServer();
+            if (pingServer) pingServer();
             clearTimeouts();
           } else if (i === timeouts.length - 1) {
-            createClient();
+            client = null;
+            pingServer = null;
             clearTimeouts();
+            setTimeout(function() {
+              createClient();
+            }, 10000);
           }
         }, time);
       };
@@ -156,6 +161,7 @@ var createClient = function() {
   client.on('end', function() {
     console.log('disconnected from server');
     client = null;
+    pingServer = null;
     createClient();
   });
 };
