@@ -14,7 +14,7 @@ var sshTunnelling = function (fn) {
   }, function (err, url) {
     if (err) {
       console.log(err);
-      setTimeput(function() {
+      setTimeout(function() {
         sshTunnelling(fn);
       }, 5000)
     } else {
