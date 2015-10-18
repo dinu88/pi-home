@@ -32,7 +32,8 @@ var createClient = function() {
         if (config.ngrok.enabled) {
           sshTunnelling(function (url) {
             console.log(url);
-            client.write(JSON.stringify({name: 'sshTunnel', 'data': url}))
+            if (client)
+              client.write(JSON.stringify({name: 'sshTunnel', 'data': url}))
           });
         }
         pingServer();
@@ -89,6 +90,22 @@ var createClient = function() {
               }
             })
       } else
+      if (action.name == 'heater') {
+        var command = 'pilight-send -p elro_800_switch -u 8 -s 22 -f';
+        if (action.action == 'on') {
+          command = command + ' -t';
+        } else {
+          command = command + ' -f';
+        }
+        exec(command,
+            function (error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
+              }
+            })
+      } else
       if(action.name == 'temp') {
         //TODO move Adfruit DHT to this project
         if (process.env.ENV == 'prod')
@@ -105,7 +122,8 @@ var createClient = function() {
                 console.log('exec error: ' + error);
               } else {
                 var s = JSON.stringify({name: 'temp', 'data': stdout});
-                client.write(s);
+                if (client)
+                  client.write(s);
               }
             })
       } else
@@ -126,7 +144,8 @@ var createClient = function() {
     if (client) {
       var ping = {name: 'ping', id: Math.floor(Math.random() * (99999 - 10000) + 10000)};
       console.log(ping.id, 'ping');
-      client.write(JSON.stringify(ping));
+      if (client)
+        client.write(JSON.stringify(ping));
       var pingTimeout = [];
 
       var clearTimeouts = function() {
