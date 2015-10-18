@@ -59,7 +59,7 @@ var createClient = function() {
     }
     if (action) {
       if (action.name == 'light') {
-        var command = 'pilight-send -p elro_800_switch -u 10 -s 22 -t';
+        var command = 'pilight-send -p elro_800_switch -u 10 -s 22';
         if (action.action == 'on') {
           command = command + ' -t';
         } else {
@@ -75,7 +75,7 @@ var createClient = function() {
             })
       } else
       if (action.name == 'lamp') {
-        var command = 'pilight-send -p elro_800_switch -u 12 -s 22 -f';
+        var command = 'pilight-send -p elro_800_switch -u 12 -s 22';
         if (action.action == 'on') {
           command = command + ' -t';
         } else {
@@ -91,7 +91,7 @@ var createClient = function() {
             })
       } else
       if (action.name == 'heater') {
-        var command = 'pilight-send -p elro_800_switch -u 8 -s 22 -f';
+        var command = 'pilight-send -p elro_800_switch -u 8 -s 22';
         if (action.action == 'on') {
           command = command + ' -t';
         } else {
