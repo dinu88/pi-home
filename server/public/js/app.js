@@ -47,6 +47,18 @@ angular.module('piHome', ['ngMaterial'])
 
         var toggleHeater = function (action) {
             console.log(action.enabled);
+            var href = 'http://chiriacdinu.com:8013/home/heater/';
+            if (action.enabled) {
+                href = href + 'on';
+            } else {
+                href = href + 'off';
+            }
+            $http.get(href).then(function(response) {
+                console.log(response);
+            }, function(response) {
+                console.error(response);
+            });
+
         };
 
         var setPreferredTemperature = function(temp) {
