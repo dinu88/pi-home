@@ -33,6 +33,9 @@ module.exports = function (app, passport, account, config, logger) {
         netSockets[i].sendEndMessage(message);
       } else {
         console.log('client is not writable, drop connection');
+        netSockets.slice(i, 1);
+        broadcast(message);
+        break;
         //TODO: splice connection
         //netConnections[i].end();
         //spliceConnection(netConnections[i].id);
