@@ -104,9 +104,9 @@ var createClient = function() {
               if (error !== null) {
                 console.log('exec error: ' + error);
               } else {
-                var s = JSON.stringify({name: 'temp', 'data': stdout});
+                var s = {name: 'temp', 'data': stdout};
                 if (client)
-                  client.write(s);
+                  client.sendMessage(s);
               }
             })
       }
