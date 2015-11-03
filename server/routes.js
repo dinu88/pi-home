@@ -29,17 +29,18 @@ module.exports = function (app, passport, account, config, logger) {
   //
   var broadcast = function(message) {
     for (var i = 0; i < netSockets.length; i++) {
-      if (!netSockets[i].isClosed()) {
+      if (netSockets[i] && !netSockets[i].isClosed()) {
         netSockets[i].sendEndMessage(message);
-      } else {
-        console.log('client is not writable, drop connection');
-        netSockets.slice(i, 1);
-        broadcast(message);
-        break;
-        //TODO: splice connection
-        //netConnections[i].end();
-        //spliceConnection(netConnections[i].id);
       }
+      //else {
+      //  console.log('client is not writable, drop connection');
+      //  netSockets.slice(i, 1);
+      //  broadcast(message);
+      //  break;
+      //  //TODO: splice connection
+      //  //netConnections[i].end();
+      //  //spliceConnection(netConnections[i].id);
+      //}
     }
   };
 
