@@ -5,6 +5,7 @@
   "description": "Pi home internet of things",
   "main": "app.js",
   "dependencies": {
+    "json-socket": "^0.1.2",
     "ngrok": "^0.2.2"
   },
   "scripts": {

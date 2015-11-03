@@ -1,5 +1,7 @@
 var https = require('https'),
-    http = require('http');
+    http = require('http'),
+    net = require('net'),
+    JsonSocket = require('json-socket');
 
 Object.defineProperty(global, '__stack', {
   get: function(){
@@ -20,30 +22,22 @@ Object.defineProperty(global, '__line', {
 });
 
 
-module.exports = function (app, passport, account, config, logger, net) {
+module.exports = function (app, passport, account, config, logger) {
   "use strict";
 
-  var netConnections = [];
-
+  //var netConnections = [];
+  //
   var broadcast = function(message) {
-    for (var i = 0; i < netConnections.length; i++) {
-      if (netConnections[i].writable) {
-        netConnections[i].write(JSON.stringify(message));
+    for (var i = 0; i < netSockets.length; i++) {
+      if (!netSockets[i].isClosed()) {
+        netSockets[i].sendEndMessage(message);
       } else {
         console.log('client is not writable, drop connection');
-        netConnections[i].end();
-        spliceConnection(netConnections[i].id);
+        //TODO: splice connection
+        //netConnections[i].end();
+        //spliceConnection(netConnections[i].id);
       }
     }
-  };
-
-  var spliceConnection = function(id) {
-    for (var i in netConnections) {
-      if (netConnections[i].id == id) {
-        netConnections.splice(i);
-      }
-    }
-    console.log(netConnections.length, __line);
   };
 
   var Thermostat = function() {
@@ -64,31 +58,30 @@ module.exports = function (app, passport, account, config, logger, net) {
       get: function() {return preferedTemp; }
     });
 
+    var toggleTimeout = null;
+
     var toggleHeater = function() {
       if (currentTemp < preferedTemp) {
         broadcast({name: 'heater', action: 'on'});
       } else {
         broadcast({name: 'heater', action: 'off'});
       }
+      if (toggleTimeout) clearTimeout(toggleTimeout);
+      toggleTimeout = setTimeout(toggleHeater, 150000);
     }
 
   };
   var thermostat = new Thermostat();
 
+  var netServer = net.createServer();
 
-  var netServer = net.createServer(function(netConnection) { //'connection' listener
-    console.log('client connected');
+  var netSockets = [];
 
-    netConnection.id = Math.floor(Math.random() * (99999 - 10000) + 10000);
-    netConnections.push(netConnection);
-
-    netConnection.on('data', function(data) {
-      "use strict";
-      data = JSON.parse(data.toString());
-      if (data.name == 'ping') {
-        console.log(data, 'ping', __line);
-        netConnection.write(JSON.stringify({name: 'pong', id: data.id}));
-      } else
+  netServer.on('connection', function(socket) { //This is a standard net.Socket
+    socket = new JsonSocket(socket); //Now we've decorated the net.Socket to be a JsonSocket
+    socket.id = Math.floor(Math.random() * (99999 - 10000) + 10000);
+    netSockets.push(socket);
+    socket.on('message', function(data) {
       if (data.name == 'temp') {
         console.log(data, __line);
       } else
@@ -97,28 +90,10 @@ module.exports = function (app, passport, account, config, logger, net) {
       }
     });
 
-    var temp = setInterval(function() {
-      if (netConnection) {
-        netConnection.write(JSON.stringify({name: 'temp'}));
-      } else {
-        clearInterval(temp);
-      }
-    }, 1000);
-
-    netConnection.on('end', function() {
+    socket.on('end', function() {
       console.log('client disconnected', __line);
-      spliceConnection(netConnection.id);
+      //spliceConnection(socket.id);
     });
-    netConnection.on('error',function(){
-      console.log("%j", arguments, __line);
-      netConnection.end();
-      netConnection.destroy();
-      netConnection.unref();
-      spliceConnection(netConnection.id);
-      netConnection = null;
-    });
-    //netConnection.write('hello\r\n');
-    //netConnection.pipe(netConnection);
   });
 
   app.get('/', function(req, res) {

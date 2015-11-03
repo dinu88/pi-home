@@ -2,6 +2,7 @@ var net = require('net'),
     config = require('./config_' + (process.env.ENV || 'dev') + '.js'),
     exec = require('child_process').exec,
     ngrok = require('ngrok'),
+    JsonSocket = require('json-socket'),
     client;
 
 
@@ -26,38 +27,20 @@ var sshTunnelling = function (fn) {
 var createClient = function() {
   "use strict";
   console.log('createClient');
-  client = net.connect(config.netServer,
-      function() { //'connect' listener
-        console.log('connected to server!');
-        if (config.ngrok.enabled) {
-          sshTunnelling(function (url) {
-            console.log(url);
-            if (client)
-              client.write(JSON.stringify({name: 'sshTunnel', 'data': url}))
-          });
-        }
-        pingServer();
-      });
+  client = new JsonSocket(new net.Socket());
+  client.on('connect', function() { //Don't send until we're connected
+    console.log('connected to server!');
 
-  client.on('error', function(err) {
-    console.log(err);
-    client.end();
-    if (err.code == 'ECONNREFUSED') {
-      client = null;
-      pingServer = null;
-      setTimeout(function() {
-        createClient();
-      }, 10000);
-    }
-  });
+    //if (config.ngrok.enabled) {
+    //  sshTunnelling(function (url) {
+    //    console.log(url);
+    //    if (client)
+    //      client.sendMessage({name: 'sshTunnel', 'data': url});
+    //  });
+    //}
 
-  client.on('data', function(action) {
-    try {
-      action = JSON.parse(action.toString());
-    } catch (e) {
-      return console.error(e);
-    }
-    if (action) {
+    client.sendMessage({a: 5, b: 7});
+    client.on('message', function(action) {
       if (action.name == 'light') {
         var command = 'pilight-send -p elro_800_switch -u 10 -s 22';
         if (action.action == 'on') {
@@ -126,61 +109,15 @@ var createClient = function() {
                   client.write(s);
               }
             })
-      } else
-      if (action.name == 'pong') {
-        console.log(action.id, 'pong');
-        pongs.push(action.id);
       }
-    }
-
-
-    //client.end();
+    });
   });
 
-  var pongs = [];
-  var timeouts = [1000, 2000, 4000];
-
-  var pingServer = function() {
-    if (client) {
-      var ping = {name: 'ping', id: Math.floor(Math.random() * (99999 - 10000) + 10000)};
-      console.log(ping.id, 'ping');
-      if (client)
-        client.write(JSON.stringify(ping));
-      var pingTimeout = [];
-
-      var clearTimeouts = function() {
-        for (var j = 0; j < pingTimeout.length; j++) {
-          clearTimeout(pingTimeout[j]);
-        }
-      };
-
-      var createTimeout = function(i, time) {
-        return setTimeout(function() {
-          if (pongs.indexOf(ping.id) !== -1) {
-            pongs.splice(pongs.indexOf(ping.id), 1);
-            if (pingServer) pingServer();
-            clearTimeouts();
-          } else if (i === timeouts.length - 1) {
-            client = null;
-            pingServer = null;
-            clearTimeouts();
-            setTimeout(function() {
-              createClient();
-            }, 10000);
-          }
-        }, time);
-      };
-
-      for (var i = 0; i < timeouts.length; i++) {
-        pingTimeout[i] = createTimeout(i, timeouts[i]);
-      }
-    }
-  };
+  client.connect(config.netServer.port, config.netServer.host);
 
   client.on('end', function() {
     console.log('disconnected from server');
     client = null;
-    pingServer = null;
     createClient();
   });
 };

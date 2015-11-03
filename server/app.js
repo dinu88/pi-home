@@ -11,6 +11,7 @@ var passport = require('passport'),
     config = require('./config_' + (process.env.ENV || 'dev') + '.js'),
     flash = require('connect-flash'),
     app = express(),
+    JsonSocket = require('json-socket'),
     net = require('net');
 
 
