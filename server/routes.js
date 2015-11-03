@@ -96,6 +96,10 @@ module.exports = function (app, passport, account, config, logger) {
     socket.on('message', function(data) {
       if (data.name == 'temp') {
         console.log(data, __line);
+        var temp = data.data.split(' ')[0].split('=')[1].split('*')[0];
+        if (parseFloat(temp))  {
+          thermostat.currentTemp(temp);
+        }
       } else
       if (data.name == 'sshTunnel') {
         console.log(data.data, __line);
