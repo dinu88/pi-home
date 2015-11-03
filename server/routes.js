@@ -71,6 +71,10 @@ module.exports = function (app, passport, account, config, logger) {
         broadcast({name: 'heater', action: 'off'});
       }
       if (toggleTimeout) clearTimeout(toggleTimeout);
+      var action = {
+        name: 'temp'
+      };
+      broadcast(action);
       toggleTimeout = setTimeout(toggleHeater, 150000);
     }
 
@@ -85,6 +89,10 @@ module.exports = function (app, passport, account, config, logger) {
     socket = new JsonSocket(socket); //Now we've decorated the net.Socket to be a JsonSocket
     socket.id = Math.floor(Math.random() * (99999 - 10000) + 10000);
     netSockets.push(socket);
+    var action = {
+      name: 'temp'
+    };
+    socket.sendMessage(action);
     socket.on('message', function(data) {
       if (data.name == 'temp') {
         console.log(data, __line);
