@@ -106,7 +106,7 @@ module.exports = function (app, passport, account, config, logger) {
         console.log(data, __line);
         var temp = data.data.split(' ')[0].split('=')[1].split('*')[0];
         if (parseFloat(temp))  {
-          thermostat.currentTemp(temp);
+          thermostat.currentTemp = temp;
         }
       } else
       if (data.name == 'sshTunnel') {
