@@ -193,6 +193,7 @@ module.exports = function (app, passport, account, config, logger) {
   });
 
   app.get('/home/thermostat/:preferredTemperature', function(req, res) {
+    console.log('thermostat.preferedTemp = ' + req.params.preferredTemperature, __line);
     thermostat.preferedTemp = req.params.preferredTemperature;
     res.sendStatus(200);
   });
