@@ -63,7 +63,7 @@ angular.module('piHome', ['ngMaterial'])
 
         var setPreferredTemperature = function(temp) {
             "use strict";
-            var href = 'http://localhost:8013/home/thermostat/' + temp;
+            var href = 'http://chiriacdinu.com:8013/home/thermostat/' + temp;
             $http.get(href).then(function(response) {
                 console.log(response);
             }, function(response) {
