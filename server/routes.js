@@ -100,7 +100,7 @@ module.exports = function (app, passport, account, config, logger) {
     var action = {
       name: 'temp'
     };
-    //socket.sendMessage(action);
+    socket.sendMessage(action);
     socket.on('message', function(data) {
       if (data.name == 'temp') {
         console.log(data, __line);
