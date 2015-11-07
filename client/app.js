@@ -41,6 +41,7 @@ var createClient = function() {
 
     client.sendMessage({a: 5, b: 7});
     client.on('message', function(action) {
+      console.log(action);
       if (action.name == 'light') {
         var command = 'pilight-send -p elro_800_switch -u 10 -s 22';
         if (action.action == 'on') {

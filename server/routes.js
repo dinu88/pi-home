@@ -25,11 +25,19 @@ Object.defineProperty(global, '__line', {
 module.exports = function (app, passport, account, config, logger) {
   "use strict";
 
-  //var netConnections = [];
-  //
+  var spliceConnection = function(id) {
+    for (var i = 0; i < netSockets.length; i++) {
+      if (netSockets[i].id == id) {
+        netSockets.splice(i, 1);
+      }
+    }
+  };
+
   var broadcast = function(message) {
     for (var i = 0; i < netSockets.length; i++) {
+      //console.log(i, __line);
       if (netSockets[i] && !netSockets[i].isClosed()) {
+        //console.log(message, __line);
         netSockets[i].sendEndMessage(message);
       }
       //else {
@@ -46,7 +54,7 @@ module.exports = function (app, passport, account, config, logger) {
 
   var Thermostat = function() {
     var currentTemp = 0;
-    var preferedTemp = 0;
+    var preferedTemp = 22;
     Object.defineProperty(this, 'currentTemp', {
       set: function(temp) {
         currentTemp = temp;
@@ -92,7 +100,7 @@ module.exports = function (app, passport, account, config, logger) {
     var action = {
       name: 'temp'
     };
-    socket.sendMessage(action);
+    //socket.sendMessage(action);
     socket.on('message', function(data) {
       if (data.name == 'temp') {
         console.log(data, __line);
@@ -108,7 +116,7 @@ module.exports = function (app, passport, account, config, logger) {
 
     socket.on('end', function() {
       console.log('client disconnected', __line);
-      //spliceConnection(socket.id);
+      spliceConnection(socket.id);
     });
   });
 
