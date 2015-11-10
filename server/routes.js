@@ -73,9 +73,11 @@ module.exports = function (app, passport, account, config, logger) {
     var toggleTimeout = null;
 
     var toggleHeater = function() {
-      if (currentTemp < preferedTemp) {
+      //Keep temp in +/- 0.2 degree of prefered temp
+      //this will prevent system to switch heater on/off to much times
+      if (currentTemp < (preferedTemp - 0.2)) {
         broadcast({name: 'heater', action: 'on'});
-      } else {
+      } else if (currentTemp > (preferedTemp + 0.2)) {
         broadcast({name: 'heater', action: 'off'});
       }
       if (toggleTimeout) clearTimeout(toggleTimeout);
