@@ -1,0 +1,37 @@
+{
+  "name": "Pi-home",
+  "icons": {
+    "16": "images/icon_16.png",
+    "48": "images/icon_48.png",
+    "64": "images/icon_64.png"
+  },
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Pi-Home project",
+  "short_name": "Pi-Home",
+  "browser_action": {
+    "default_icon": {
+      "16": "images/icon_16.png",
+      "48": "images/icon_48.png"
+    },
+    "default_title": "Pi-Home v.0.0.1"
+  },
+  "background": {
+    "scripts": ["app.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["contentscript.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+  "permissions": [
+    "tabs",
+    "contextMenus",
+    "http://*/",
+    "https://*/"
+  ]
+}
