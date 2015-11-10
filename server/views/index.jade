@@ -1,46 +1,35 @@
-doctype html
-html(ng-app='piHome')
-   head(lang='en')
-      meta(charset='UTF-8')
-      title
-      link(rel='stylesheet', href='https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css')
-      link(rel='stylesheet', href='static/css/custom.css')
-      link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic')
-      meta(name='viewport', content='initial-scale=1')
-   body(layout='column', ng-controller='piHome')
-      div(style='padding-bottom: 15px;')
-         md-toolbar
-            .md-toolbar-tools
-               h2.md-flex Smart Home
-      //md-list-item(ng-repeat='(id, setting) in settings')
-      //   md-icon.icons_conf(md-svg-icon='{{setting.icon}}')
-      //   p  {{ setting.actionName }}
-      //   md-switch.md-secondary(ng-model='setting.enabled', ng-change="setting.action(setting)")
-      md-list-item
-         md-icon.icons_conf(md-svg-icon='static/images/icons/wb_incandescent.svg')
-         p  Light
-         md-switch.md-secondary(ng-model='settings[0].enabled', ng-change="settings[0].action(settings[0])")
-      md-list-item
-         md-icon.icons_conf(md-svg-icon='static/images/icons/ic_wb_iridescent_black_24px.svg')
-         p  Lamp
-         md-switch.md-secondary(ng-model='settings[1].enabled', ng-change="settings[1].action(settings[1])")
-      md-list-item
-         md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_whatshot_black_24px.svg')
-         p Heater
-         md-switch.md-secondary(ng-model='settings[2].enabled', ng-change="settings[2].action(settings[2])")
-      md-list-item(layout-align="start start" ng-show="settings[2].enabled")
-         div( style="max-width:28px; padding: 25px 0;")
-            md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_exposure_black_24px.svg')
-         div(style="padding-left: 25px;" flex)
-            md-input-container
-               label Climate Control
-               input(type="number" aria-valuemin="0" ng-model='settings[3].value')
-         div(flex style="max-width:60px; padding: 20px 0;")
-            md-button.md-icon-button.launch(ng-click="settings[3].action(settings[3].value)")
-               md-icon.icons_conf(md-svg-icon="static/images/icons/ic_done_black_24px.svg")
+//- login.jade
+extends ./layout.jade
 
-      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js')
-      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js')
-      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js')
-      script(src='https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js')
-      script(src='static/js/app.js')
+block body
+  div(layout='column', ng-controller='piHome')
+    div(style='padding-bottom: 15px;')
+      md-toolbar
+        .md-toolbar-tools
+          h2.md-flex Pi Home
+    //md-list-item(ng-repeat='(id, setting) in settings')
+    //   md-icon.icons_conf(md-svg-icon='{{setting.icon}}')
+    //   p  {{ setting.actionName }}
+    //   md-switch.md-secondary(ng-model='setting.enabled', ng-change="setting.action(setting)")
+    md-list-item
+      md-icon.icons_conf(md-svg-icon='static/images/icons/wb_incandescent.svg')
+      p  Light
+      md-switch.md-secondary(ng-model='settings[0].enabled', ng-change="settings[0].action(settings[0])")
+    md-list-item
+      md-icon.icons_conf(md-svg-icon='static/images/icons/ic_wb_iridescent_black_24px.svg')
+      p  Lamp
+      md-switch.md-secondary(ng-model='settings[1].enabled', ng-change="settings[1].action(settings[1])")
+    md-list-item
+      md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_whatshot_black_24px.svg')
+      p Heater
+      md-switch.md-secondary(ng-model='settings[2].enabled', ng-change="settings[2].action(settings[2])")
+    md-list-item(layout-align="start start" ng-show="settings[2].enabled")
+      div( style="max-width:28px; padding: 25px 0;")
+        md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_exposure_black_24px.svg')
+      div(style="padding-left: 25px;" flex)
+        md-input-container
+          label Climate Control
+          input(type="number" aria-valuemin="0" ng-model='settings[3].value')
+      div(flex style="max-width:60px; padding: 20px 0;")
+        md-button.md-icon-button.launch(ng-click="settings[3].action(settings[3].value)")
+          md-icon.icons_conf(md-svg-icon="static/images/icons/ic_done_black_24px.svg")

@@ -1,3 +1,25 @@
-//
-   Created by undefined on 10/11/15.
+//- login.jade
+extends ./layout.jade
 
+block body
+  div(layout='column', ng-controller='login')
+    div(style='padding-bottom: 15px;')
+      md-toolbar
+        .md-toolbar-tools
+          h2.md-flex Pi Home - Log-in
+    //md-list-item(ng-repeat='(id, setting) in settings')
+    //   md-icon.icons_conf(md-svg-icon='{{setting.icon}}')
+    //   p  {{ setting.actionName }}
+    //   md-switch.md-secondary(ng-model='setting.enabled', ng-change="setting.action(setting)")
+
+    div
+      md-content(md-theme="docs-dark" layout-padding layout="row" layout-sm="column")
+        form(method="POST")
+          md-input-container
+            label Username
+            input(name="username" ng-model="user.username" type="text")
+          md-input-container
+            label Password
+            input(name="password" ng-model="user.password" type="password")
+          md-input-container
+            md-button.md-raised.md-primary(ng-click="logIn()") LogIn

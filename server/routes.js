@@ -120,7 +120,7 @@ module.exports = function (app, passport, account, config, logger) {
     });
   });
 
-  app.get('/', function(req, res) {
+  app.get('/', account.isAuthenticated, function(req, res) {
     "use strict";
     res.render('index');
   });
@@ -130,7 +130,7 @@ module.exports = function (app, passport, account, config, logger) {
     if (req.user)
       res.redirect('/');
     else
-      res.render('index');
+      res.render('login');
   });
 
   app.post('/login', passport.authenticate('local', { failureFlash: 'Invalid username or password.'}), function(req, res) {
@@ -138,7 +138,7 @@ module.exports = function (app, passport, account, config, logger) {
     if (req.query.r) {
       res.redirect(req.query.r);
     } else if (req.query.dynamic) {
-      res.send(200);
+      res.sendStatus(200);
     } else {
       res.redirect('/');
     }
@@ -150,7 +150,7 @@ module.exports = function (app, passport, account, config, logger) {
     res.redirect('/')
   });
 
-  app.get('/home/light/:action', function(req, res) {
+  app.get('/home/light/:action', account.isAuthenticated, function(req, res) {
     var action = {
       name: 'light'
     };
@@ -164,7 +164,7 @@ module.exports = function (app, passport, account, config, logger) {
     res.sendStatus(200);
   });
 
-  app.get('/home/lamp/:action', function(req, res) {
+  app.get('/home/lamp/:action', account.isAuthenticated, function(req, res) {
     var action = {
       name: 'lamp'
     };
@@ -178,7 +178,7 @@ module.exports = function (app, passport, account, config, logger) {
     res.sendStatus(200);
   });
 
-  app.get('/home/heater/:action', function(req, res) {
+  app.get('/home/heater/:action', account.isAuthenticated, function(req, res) {
     var action = {
       name: 'heater'
     };
@@ -192,7 +192,7 @@ module.exports = function (app, passport, account, config, logger) {
     res.sendStatus(200);
   });
 
-  app.get('/home/thermostat/:preferredTemperature', function(req, res) {
+  app.get('/home/thermostat/:preferredTemperature', account.isAuthenticated, function(req, res) {
     console.log('thermostat.preferedTemp = ' + req.params.preferredTemperature, __line);
     thermostat.preferedTemp = req.params.preferredTemperature;
     res.sendStatus(200);

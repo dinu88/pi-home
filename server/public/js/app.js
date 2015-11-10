@@ -78,4 +78,22 @@ angular.module('piHome', ['ngMaterial'])
             { name: 'thermostat', action: setPreferredTemperature, actionName: 'Thermostat', icon: 'static/images/icons/wb_sunny.svg'},
         ];
 
+    })
+    .controller('login', function($scope, $http, $location) {
+        "use strict";
+        $scope.user = {
+            username: '',
+            password: ''
+        }
+
+        $scope.logIn = function() {
+            $http.post('/login?dynamic=true', $scope.user).success(function(res, status) {
+                if (status == 200) {
+                    //TODO create states, use $state.go to switch state
+                    window.location.pathname = '/';
+                }
+            }).error(function(err) {
+                console.log(err);
+            })
+        }
     });
