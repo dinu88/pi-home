@@ -40,62 +40,15 @@ var createClient = function() {
     //}
 
     client.sendMessage({a: 5, b: 7});
-    client.on('message', function(action) {
-      console.log(action);
-      if (action.name == 'light') {
-        var command = 'pilight-send -p elro_800_switch -u 10 -s 22';
-        if (action.action == 'on') {
-          command = command + ' -t';
-        } else {
-          command = command + ' -f';
-        }
-        exec(command,
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-            })
-      } else
-      if (action.name == 'lamp') {
-        var command = 'pilight-send -p elro_800_switch -u 12 -s 22';
-        if (action.action == 'on') {
-          command = command + ' -t';
-        } else {
-          command = command + ' -f';
-        }
-        exec(command,
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-            })
-      } else
-      if (action.name == 'heater') {
-        var command = 'pilight-send -p elro_800_switch -u 8 -s 22';
-        if (action.action == 'on') {
-          command = command + ' -t';
-        } else {
-          command = command + ' -f';
-        }
-        exec(command,
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-            })
-      } else
-      if(action.name == 'temp') {
+    client.on('message', function(message) {
+      console.log(message.action);
+      if(message.action == 'temp') {
         //TODO move Adfruit DHT to this project
         if (process.env.ENV == 'prod')
           var command = 'sudo /home/pi/sources/Adafruit_Python_DHT/examples/AdafruitDHT.py 22 4';
         else
-          var command = 'uname -a';
+          var command = 'sudo /home/pi/sources/Adafruit_Python_DHT/examples/AdafruitDHT.py 22 4';
+          //var command = 'uname -a';
         exec(command,
             function (error, stdout, stderr) {
               if (error) {
@@ -108,6 +61,16 @@ var createClient = function() {
                 var s = {name: 'temp', 'data': stdout};
                 if (client)
                   client.sendMessage(s);
+              }
+            })
+      }
+      else {
+        exec(message.action,
+            function (error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
               }
             })
       }
