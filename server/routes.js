@@ -126,9 +126,9 @@ module.exports = function (app, passport, account, config, logger, io) {
       //Keep temp in +/- 0.2 degree of prefered temp
       //this will prevent system to switch heater on/off to much times
       if (currentTemp < (preferedTemp - 0.2)) {
-        broadcast({name: 'heater', action: 'on'});
+        broadcast({destionation: 'net', 'action': devices[2].action.on});
       } else if (currentTemp > (preferedTemp + 0.2)) {
-        broadcast({name: 'heater', action: 'off'});
+        broadcast({destionation: 'net', 'action': devices[2].action.off});
       }
       if (toggleTimeout) clearTimeout(toggleTimeout);
       var action = {
