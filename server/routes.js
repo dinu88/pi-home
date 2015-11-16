@@ -100,7 +100,7 @@ module.exports = function (app, passport, account, config, logger, io) {
     Object.defineProperty(this, 'currentTemp', {
       set: function(temp) {
         currentTemp = temp;
-        toggleHeater();
+        //setTimeout(toggleHeater, 150000);
         var msg = {
           id: 1,
           destination: 'web',
