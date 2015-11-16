@@ -100,7 +100,7 @@ module.exports = function (app, passport, account, config, logger, io) {
     Object.defineProperty(this, 'currentTemp', {
       set: function(temp) {
         currentTemp = temp;
-        //setTimeout(toggleHeater, 150000);
+        setTimeout(toggleHeater, 150000);
         var msg = {
           id: 1,
           destination: 'web',
@@ -125,10 +125,10 @@ module.exports = function (app, passport, account, config, logger, io) {
     var toggleHeater = function() {
       //Keep temp in +/- 0.2 degree of prefered temp
       //this will prevent system to switch heater on/off to much times
-      if (currentTemp < (preferedTemp - 0.2)) {
-        broadcast({destionation: 'net', 'action': devices[2].action.on});
-      } else if (currentTemp > (preferedTemp + 0.2)) {
+      if (currentTemp > preferedTemp) {
         broadcast({destionation: 'net', 'action': devices[2].action.off});
+      } else {
+        broadcast({destionation: 'net', 'action': devices[2].action.on});
       }
       if (toggleTimeout) clearTimeout(toggleTimeout);
       var action = {
