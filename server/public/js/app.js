@@ -60,7 +60,8 @@ angular.module('piHome', ['ngMaterial', 'ui.router'])
 
 
       //var server = 'http://chiriacdinu.com:8013';
-      var server = 'http://localhost:8013';
+      //var server = 'http://localhost:8013';
+      var server = '/';
 
       $http.get(server + '/home/data/preferedTemp').success(function (preferedTemp) {
         "use strict";
