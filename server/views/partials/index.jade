@@ -1,0 +1,42 @@
+div(layout='column')
+  div(style='padding-bottom: 15px;')
+    md-toolbar
+      .md-toolbar-tools
+        h2.md-flex Pi Home
+  //md-list-item(ng-repeat='(id, setting) in settings')
+  //   md-icon.icons_conf(md-svg-icon='{{setting.icon}}')
+  //   p  {{ setting.actionName }}
+  //   md-switch.md-secondary(ng-model='setting.enabled', ng-change="setting.action(setting)")
+  md-list-item
+    md-icon.icons_conf(md-svg-icon='static/images/icons/wb_incandescent.svg')
+    p  Light
+    md-switch.md-secondary(ng-model='settings[0].enabled', ng-change="settings[0].action(settings[0])")
+  md-list-item
+    md-icon.icons_conf(md-svg-icon='static/images/icons/ic_wb_iridescent_black_24px.svg')
+    p  Lamp
+    md-switch.md-secondary(ng-model='settings[1].enabled', ng-change="settings[1].action(settings[1])")
+  md-list-item
+    md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_power_black_24px.svg')
+    p Socket
+    md-switch.md-secondary(ng-model='settings[4].enabled', ng-change="settings[4].action(settings[4])")
+  md-list-item
+    md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_whatshot_black_24px.svg')
+    p Heater
+    md-switch.md-secondary(ng-model='settings[2].enabled', ng-change="settings[2].action(settings[2])")
+  //md-list-item
+  //  md-input-container.md-icon-float.md-icon-right.md-block
+  //    label Climate Control
+  //    md-icon(md-svg-src="static/images/icons/ic_exposure_black_24px.svg")
+  //    div(layout="row")
+  //      input(type="number" aria-valuemin="0" step="0.1" ng-model='settings[3].value' flex="")
+  //      md-icon(md-svg-src="static/images/icons/ic_done_black_24px.svg" style="position: absolute; top: 4px;")
+  md-list-item(layout-align="start start" ng-show="settings[2].enabled")
+    div( style="max-width:28px; padding: 25px 0;")
+      md-icon.icons_conf(aria-label="Cake" md-svg-icon='static/images/icons/ic_exposure_black_24px.svg')
+    div(style="padding-left: 25px;" flex)
+      md-input-container
+        label Climate Control {{currentTemp ? '(' + currentTemp + ')' : ''}}
+        input(type="number" aria-valuemin="0" ng-model='preferedTemp')
+    div(flex style="max-width:60px; padding: 20px 0;")
+      md-button.md-icon-button.launch(ng-click="settings[3].action(preferedTemp)")
+        md-icon.icons_conf(md-svg-icon="static/images/icons/ic_done_black_24px.svg")

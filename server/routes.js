@@ -22,32 +22,74 @@ Object.defineProperty(global, '__line', {
 });
 
 
-module.exports = function (app, passport, account, config, logger) {
+module.exports = function (app, passport, account, config, logger, io) {
   "use strict";
 
-  var spliceConnection = function(id) {
-    for (var i = 0; i < netSockets.length; i++) {
-      if (netSockets[i].id == id) {
-        netSockets.splice(i, 1);
+  var devices = [
+    {
+      name: 'Light',
+      query: 'light',
+      action: {
+        on: 'pilight-send -p elro_800_switch -u 10 -s 22 -t',
+        off: 'pilight-send -p elro_800_switch -u 10 -s 22 -f'
+      }
+    }, {
+      name: 'Lamp',
+      query: 'lamp',
+      action: {
+        on: 'pilight-send -p elro_800_switch -u 12 -s 22 -t',
+        off: 'pilight-send -p elro_800_switch -u 12 -s 22 -f'
+      }
+    }, {
+      name: 'Heater',
+      query: 'heater',
+      action: {
+        on: 'pilight-send -p elro_800_switch -u 8 -s 22 -t',
+        off: 'pilight-send -p elro_800_switch -u 8 -s 22 -f'
+      }
+    }, {
+      name: 'Socket',
+      query: 'socket',
+      action: {
+        on: 'pilight-send -p elro_800_switch -u 14 -s 22 -t',
+        off: 'pilight-send -p elro_800_switch -u 14 -s 22 -f'
       }
     }
+  ];
+
+  var spliceConnection = function(id, type) {
+    if (!type || type == 'net') {
+      for (var i = 0; i < netSockets.length; i++) {
+        if (netSockets[i].id == id) {
+          netSockets.splice(i, 1);
+        }
+      }
+    } else {
+      for (var i = 0; i < webSockets.length; i++) {
+        if (webSockets[i].id == id) {
+          webSockets.splice(i, 1);
+        }
+      }
+    }
+
   };
 
   var broadcast = function(message) {
-    for (var i = 0; i < netSockets.length; i++) {
-      //console.log(i, __line);
-      if (netSockets[i] && !netSockets[i].isClosed()) {
-        //console.log(message, __line);
-        netSockets[i].sendEndMessage(message);
+    if (message.destionation == 'net') {
+      console.log(message, __line);
+      for (var i = 0; i < netSockets.length; i++) {
+        console.log(i);
+        if (netSockets[i] && !netSockets[i].isClosed()) {
+          netSockets[i].sendEndMessage(message);
+        }
       }
-      //else {
-      //  console.log('client is not writable, drop connection');
-      //  netSockets.slice(i, 1);
-      //  broadcast(message);
-      //  break;
-      //  //TODO: splice connection
-      //  //netConnections[i].end();
-      //  //spliceConnection(netConnections[i].id);
+    }
+    if (message.destionation == 'web') {
+      io.emit('action', msg);
+      //for (var i = 0; i < webSockets.length; i++) {
+      //  if (webSockets[i] && !webSockets[i].isClosed()) {
+      //    webSockets[i].sendEndMessage(message);
+      //  }
       //}
     }
   };
@@ -59,6 +101,14 @@ module.exports = function (app, passport, account, config, logger) {
       set: function(temp) {
         currentTemp = temp;
         toggleHeater();
+        var msg = {
+          id: 1,
+          destination: 'web',
+          action: {
+            setTemp: currentTemp
+          }
+        };
+        broadcast(msg);
       },
       get: function() {return currentTemp; }
     });
@@ -82,7 +132,8 @@ module.exports = function (app, passport, account, config, logger) {
       }
       if (toggleTimeout) clearTimeout(toggleTimeout);
       var action = {
-        name: 'temp'
+        destionation: 'net',
+        action: 'temp'
       };
       broadcast(action);
       toggleTimeout = setTimeout(toggleHeater, 150000);
@@ -94,13 +145,14 @@ module.exports = function (app, passport, account, config, logger) {
   var netServer = net.createServer();
 
   var netSockets = [];
+  var webSockets = [];
 
   netServer.on('connection', function(socket) { //This is a standard net.Socket
     socket = new JsonSocket(socket); //Now we've decorated the net.Socket to be a JsonSocket
     socket.id = Math.floor(Math.random() * (99999 - 10000) + 10000);
     netSockets.push(socket);
     var action = {
-      name: 'temp'
+      action: 'temp'
     };
     socket.sendMessage(action);
     socket.on('message', function(data) {
@@ -132,7 +184,7 @@ module.exports = function (app, passport, account, config, logger) {
     if (req.user)
       res.redirect('/');
     else
-      res.render('login');
+      res.render('index');
   });
 
   app.post('/login', passport.authenticate('local', { failureFlash: 'Invalid username or password.'}), function(req, res) {
@@ -152,47 +204,24 @@ module.exports = function (app, passport, account, config, logger) {
     res.redirect('/')
   });
 
-  app.get('/home/light/:action', account.isAuthenticated, function(req, res) {
-    var action = {
-      name: 'light'
-    };
+  var createDeviceQuery = function(device) {
+    app.get('/home/' + device.query + '/:action', account.isAuthenticated, function(req, res) {
+      console.log(device.query, req.params.action, __line);
+      device.status = req.params.action;
+      var msg = {
+        id: 1,
+        destionation: 'net',
+        action: device.action[req.params.action]
+      };
+      broadcast(msg);
+      io.emit('devices', devices);
+      res.sendStatus(200);
+    });
+  };
 
-    if (req.params.action == 'on') {
-      action.action = 'on';
-    } else {
-      action.action = 'off';
-    }
-    broadcast(action);
-    res.sendStatus(200);
-  });
-
-  app.get('/home/lamp/:action', account.isAuthenticated, function(req, res) {
-    var action = {
-      name: 'lamp'
-    };
-
-    if (req.params.action == 'on') {
-      action.action = 'on';
-    } else {
-      action.action = 'off';
-    }
-    broadcast(action);
-    res.sendStatus(200);
-  });
-
-  app.get('/home/heater/:action', account.isAuthenticated, function(req, res) {
-    var action = {
-      name: 'heater'
-    };
-
-    if (req.params.action == 'on') {
-      action.action = 'on';
-    } else {
-      action.action = 'off';
-    }
-    broadcast(action);
-    res.sendStatus(200);
-  });
+  for (var i = 0; i < devices.length; i++) {
+    createDeviceQuery(devices[i])
+  }
 
   app.get('/home/thermostat/:preferredTemperature', account.isAuthenticated, function(req, res) {
     console.log('thermostat.preferedTemp = ' + req.params.preferredTemperature, __line);
@@ -200,9 +229,28 @@ module.exports = function (app, passport, account, config, logger) {
     res.sendStatus(200);
   });
 
+  app.get('/home/data/currentTemp', account.isAuthenticated, function(req, res) {
+    res.send(thermostat.currentTemp);
+  });
+  app.get('/home/data/preferedTemp', account.isAuthenticated, function(req, res) {
+    res.send(thermostat.preferedTemp);
+  });
+  app.get('/home/data/devices', account.isAuthenticated, function(req, res) {
+    res.send(devices);
+  });
+
   app.get('*', function(req, res) {
     "use strict";
     res.render('index');
+  });
+
+  io.on('connection', function(socket){
+    console.log('user connected');
+    webSockets.push(socket);
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+      spliceConnection(socket.id, 'web');
+    });
   });
 
   netServer.listen(config.app.NET_PORT, function() { //'listening' listener

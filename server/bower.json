@@ -1,0 +1,16 @@
+{
+  "name": "pi-home-server",
+  "description": "Pi home internet of things",
+  "main": "app.js",
+  "authors": [
+    "dinu88&cristina90"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/dinu88/pi-home",
+  "moduleType": [],
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.7",
+    "angular-ui-router": "~0.2.15"
+  }
+}

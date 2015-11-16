@@ -11,8 +11,9 @@ var passport = require('passport'),
     config = require('./config_' + (process.env.ENV || 'dev') + '.js'),
     flash = require('connect-flash'),
     app = express(),
-    JsonSocket = require('json-socket'),
-    net = require('net');
+    http = require('http').Server(app),
+    io = require('socket.io')(http),
+    JsonSocket = require('json-socket');
 
 
 //config logger
@@ -59,8 +60,8 @@ passport.serializeUser(account.serializeUser);
 passport.deserializeUser(account.deserializeUser);
 
 
-require('./routes')(app, passport, account, config, logger, net);
+require('./routes')(app, passport, account, config, logger, io);
 
-app.listen(app.get('port'), function(){
+http.listen(app.get('port'), function(){
   console.log(("Express server listening on port " + app.get('port')));
 });
