@@ -2,3 +2,7 @@
 .icons_conf svg {
     fill: #009688;
 }
+
+md-toolbar {
+    min-height: 50px;
+}
