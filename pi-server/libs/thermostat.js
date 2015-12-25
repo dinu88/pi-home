@@ -55,10 +55,10 @@ var Thermostat = function(_thermometer_, _heater_) {
 
           currentTemp = temp;
           if ((currentTemp - tempRange) < preferredTemp) {
-            console.log('switch heater on');
+            console.log('thermostat: currentTemp: ' + currentTemp + '  switch heater on');
             heater.on();
           } else if((currentTemp + tempRange) > preferredTemp) {
-            console.log('switch heater off');
+            console.log('thermostat: currentTemp: ' + currentTemp + '  switch heater off');
             heater.off();
           }
 
