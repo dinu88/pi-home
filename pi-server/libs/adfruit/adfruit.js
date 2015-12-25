@@ -44,9 +44,9 @@ var getData = function (type, fn) {
       if (type) {
         if (type.temp && type.humidity) {
           fn(null, {temp: TEMP, humidity: HUMIDITY});
-        } else if (data.temp) {
+        } else if (type.temp) {
           fn(null, TEMP);
-        } else if (data.humidity) {
+        } else if (type.humidity) {
           fn(null, HUMIDITY);
         }
       } else {
