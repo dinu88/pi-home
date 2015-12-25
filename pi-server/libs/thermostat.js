@@ -7,7 +7,7 @@ var Thermostat = function(_thermometer_, _heater_) {
 
   var loopInterval = 30000; //30 seconds
 
-  var tempRange = 0.2;
+  var tempRange = 0.1;
 
   this.init = function(_preferredTemp_) {
     if (_preferredTemp_) {
